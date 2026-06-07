@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/style.css"/>
+  <title>MeapiSpace</title>
+</head>
+<body>
+<main id="app" class="shell expanded">
+  <section id="quota-card" class="quota-card glass" data-view="expanded">
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <div class="title-row">
+      <span id="lamp" class="lamp green"></span>
+      <span class="brand">MeapiSpace</span>
+      <span id="updated" class="updated">等待刷新</span>
+      <button id="refresh" class="icon-button" aria-label="刷新">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 12a8 8 0 0 1-13.7 5.7M4 12A8 8 0 0 1 17.7 6.3"/>
+          <path d="M7 18H3v-4M17 6h4v4"/>
+        </svg>
+      </button>
+    </div>
+    <div class="content-row">
+      <div class="orb" id="orb">
+        <div id="ring" class="ring"></div>
+        <div id="percent" class="percent">--</div>
+        <div class="remain-label">剩余</div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><span>余额</span><strong id="amount">--</strong></div>
+        <div class="metric"><span>今日</span><strong id="today-cost">--</strong></div>
+        <div class="metric"><span>令牌</span><strong id="today-token">--</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="collapsed-card" class="collapsed-card glass" data-view="collapsed" hidden>
+    <div class="glow glow-c"></div>
+    <span class="stack-lamp green" data-lamp="green"></span>
+    <span class="stack-lamp yellow" data-lamp="yellow"></span>
+    <span class="stack-lamp red" data-lamp="red"></span>
+  </section>
+
+  <section id="settings-card" class="settings-card glass" data-view="settings" hidden>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <button id="settings-close" class="close-button" aria-label="关闭">×</button>
+    <h1>访问密钥</h1>
+    <p>输入后保存，自动刷新额度</p>
+    <label class="key-field">
+      <input id="api-key" spellcheck="false" autocomplete="off" aria-label="访问密钥"/>
+    </label>
+    <div id="settings-message" class="settings-message">默认服务：https://meapi.space</div>
+    <div class="settings-actions">
+      <button id="get-key" class="text-button">获取API秘钥</button>
+      <button id="cancel" class="text-button">取消</button>
+      <button id="save" class="text-button primary">保存</button>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+  <div id="startup-tip" class="startup-tip">提示：双击可展开/收起</div>
+  <nav id="context-menu" class="context-menu" hidden>
+    <button data-action="settings">设置访问密钥</button>
+    <button data-action="hide">隐藏浮窗</button>
+    <span></span>
+    <button data-action="quit">退出应用</button>
+  </nav>
+</main>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

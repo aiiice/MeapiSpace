@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=MeapiSpace
+Comment=MeapiSpace macOS 额度小组件
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/MeapiSpace %u
+Terminal=false
+Type=Application
+Icon=MeapiSpace
+Categories=Utility;
+StartupWMClass=MeapiSpace
+
+ 

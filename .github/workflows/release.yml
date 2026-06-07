@@ -1,0 +1,125 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, for example v0.1.0"
+        required: true
+        default: "v0.1.0"
+      create_release:
+        description: "Create or update a GitHub Release"
+        required: true
+        default: true
+        type: boolean
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: Windows x64
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - name: Build Windows executable
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Package Windows zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist/MeapiSpace.exe -DestinationPath dist/MeapiSpace-Windows-x64.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MeapiSpace-Windows-x64
+          path: |
+            dist/MeapiSpace.exe
+            dist/MeapiSpace-Windows-x64.zip
+
+  macos:
+    name: macOS universal
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: macos/MeapiSpaceMac
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: macos/MeapiSpaceMac/go.mod
+          cache-dependency-path: macos/MeapiSpaceMac/go.sum
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: macos/MeapiSpaceMac/frontend/package-lock.json
+
+      - name: Install Wails
+        run: go install github.com/wailsapp/wails/v3/cmd/wails3@v3.0.0-alpha.98
+
+      - name: Build macOS app
+        run: |
+          export PATH="$HOME/go/bin:$PATH"
+          wails3 task darwin:package:universal
+
+      - name: Package macOS zip and dmg
+        run: |
+          ditto -c -k --keepParent bin/MeapiSpace.app bin/MeapiSpace-macOS-universal.zip
+          hdiutil create -volname MeapiSpace -srcfolder bin/MeapiSpace.app -ov -format UDZO bin/MeapiSpace-macOS-universal.dmg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MeapiSpace-macOS-universal
+          path: |
+            macos/MeapiSpaceMac/bin/MeapiSpace-macOS-universal.zip
+            macos/MeapiSpaceMac/bin/MeapiSpace-macOS-universal.dmg
+
+  release:
+    name: GitHub Release
+    needs:
+      - windows
+      - macos
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || inputs.create_release
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
+          IS_PRERELEASE: ${{ contains(github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name, '-') }}
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(find artifacts -type f \( -name "*.zip" -o -name "*.dmg" -o -name "*.exe" \) | sort)
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "${files[@]}" --clobber
+          else
+            prerelease_flag=""
+            if [ "$IS_PRERELEASE" = "true" ]; then
+              prerelease_flag="--prerelease"
+            fi
+            gh release create "$RELEASE_TAG" "${files[@]}" \
+              --target "$GITHUB_SHA" \
+              --title "MeapiSpace $RELEASE_TAG" \
+              --notes "Windows 和 macOS 发布版自动构建。" \
+              $prerelease_flag
+          fi

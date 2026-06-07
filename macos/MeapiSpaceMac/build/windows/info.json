@@ -1,0 +1,15 @@
+{
+	"fixed": {
+		"file_version": "0.1.0"
+	},
+	"info": {
+		"0000": {
+			"ProductVersion": "0.1.0",
+			"CompanyName": "MeapiSpace",
+			"FileDescription": "MeapiSpace macOS 额度小组件",
+			"LegalCopyright": "(c) 2026, MeapiSpace",
+			"ProductName": "MeapiSpace",
+			"Comments": "MeapiSpace quota widget"
+		}
+	}
+}

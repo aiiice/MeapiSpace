@@ -1,35 +1,45 @@
 # MeapiSpace
 
-Windows tray widget for displaying the current MeapiSpace balance/remaining quota.
+MeapiSpace 桌面额度小组件。
 
-## Usage
-
-Build:
+## Windows 本地构建
 
 ```powershell
 .\build.ps1
 ```
 
-Run:
+运行：
 
 ```powershell
 .\dist\MeapiSpace.exe
 ```
 
-The first launch asks for your access key. The widget queries:
+首次启动会让你输入访问秘钥。小组件会请求：
 
 ```text
 https://meapi.space/v1/usage
 ```
 
-with:
+请求头：
 
 ```text
 Authorization: Bearer <your-api-key>
 ```
 
-The access key is encrypted with Windows DPAPI and stored under the current user's
-config directory.
+访问秘钥会用 Windows DPAPI 加密后保存在当前用户的配置目录。
 
-`build.ps1` embeds `app.manifest` into the executable so the Windows common
-controls used by the tray UI are available at startup.
+## GitHub 自动打包
+
+仓库里的 `Build Release` workflow 会自动构建：
+
+- Windows：`MeapiSpace.exe`、`MeapiSpace-Windows-x64.zip`
+- macOS：`MeapiSpace-macOS-universal.zip`、`MeapiSpace-macOS-universal.dmg`
+
+在 GitHub 的 Actions 页面手动运行 `Build Release`，填入版本号，例如 `v0.1.0`，即可生成并发布 Release。
+
+也可以推送 tag 触发：
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```

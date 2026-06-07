@@ -1,0 +1,8 @@
+dist/
+*.zip
+*.dmg
+
+macos/MeapiSpaceMac/.task/
+macos/MeapiSpaceMac/bin/
+macos/MeapiSpaceMac/frontend/dist/
+macos/MeapiSpaceMac/frontend/node_modules/
