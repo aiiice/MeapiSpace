@@ -105,6 +105,7 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
           IS_PRERELEASE: ${{ contains(github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name, '-') }}
